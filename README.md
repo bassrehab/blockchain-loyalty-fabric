@@ -187,7 +187,10 @@ if getting error about running ./startFabric.sh permission
     $ node server.js
     ~~~~
     
-4. Cleaning up
+4. Access the frontend application:
+   Open browser: http://localhost:8000
+    
+5. Cleaning up
     ~~~~
     $ docker rm -f $(docker ps -aq)
     $ docker rmi -f $(docker images -a -q)
