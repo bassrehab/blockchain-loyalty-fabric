@@ -8,10 +8,10 @@ An app that uses Hyperledger Fabric blockchain as a platform for Loyalty program
 
 1. Various users (Merchants, Acquirers, exsisting Loyalty providers, Regulators) will interact with the Node.js application.
 2. The client (defined by wallet app, Acquirer systems, or existing loyalty platforms) JS will send messages to the backend when the user interacts with the application.
-3. Reading or writing the ledger is known as a proposal (for example, querying a specific Point transaction - queryPoints-  or recording a points transaction - recordTPoints). This proposal is built by  the application via the SDK, and then sent to the endorsing peers.
+3. Reading or writing the ledger is known as a proposal (for example, querying a specific Point transaction - queryPoints-  or recording a points transaction - recordPoints). This proposal is built by  the application via the SDK, and then sent to the endorsing peers.
 4. The endorsing peers will use the application-specific chaincode smart contract to simulate the transaction. If there are no issues, the transaction will be endorsed, and sent back to our application.
 5. The application will then send the endorsed proposal to the ordering service via the SDK. The orderer will package many proposals from the whole network into a block. Then, it will broadcast the new block to the committing peers in the network.
-6. Finally, each committing peer will validate the block and write it to its ledger (shown in teal above). The transaction has now been committed, and any reads will reflect this change.
+6. Finally, each committing peer will validate the block and write it to its ledger. The transaction has now been committed, and any reads will reflect this change.
 
 
     
