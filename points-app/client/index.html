@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Blockchain based Loyalty Program</title>
+    <link rel="icon" href="favicon.png" type="image/gif">
+
+    <!-- require jquery and bootstrap scripts -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
+    
+    <!-- adding style here -->
+    <style type="text/css">
+      header{
+        background-color: lightgray;
+        font-size:20px;
+        padding:15px;
+      }
+      header, .form-group{
+        margin-bottom: 3%;
+      }
+      .form-group{
+        width:50%;
+      }
+      #body{
+        margin-left:3%;
+        margin-right:3%;
+      }
+      .form-control{
+        margin: 8px;
+      }
+      #right_header{
+        width:20%;
+        font-size:15px;
+        margin-right:0px;
+      }
+      #left_header{
+        margin-left:0;
+        width:40%;
+        display:inline-block;
+      } 
+      #id {
+        width:49%;
+        display: inline-block;
+      }
+      table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+      }
+      td, th {
+          border: 1px solid #dddddd;
+          text-align: left;
+          padding: 8px;
+      }
+      tr:nth-child(even) {
+          background-color: #dddddd;
+      }
+    </style>
+  </head>
+  <body ng-app="application" ng-controller="appController">
+    <header>
+      <div id="left_header">Loyalty Points Application</div>
+      <i id="right_header">An app that uses Hyperledger Fabric blockchain as a platform for Loyalty Points</i>
+    </header>
+
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Key</h3>
+      </div>
+      <div class="panel-body">
+      <ul>
+        <li><strong>Holder:</strong> User/subscriber ID who holds the current points.
+          This may be your system specific ID or users Wallet Id</li>
+        <li><strong>Transaction Timestamp:</strong> Time stamp when the points txn took place. Advised to use consistent
+        universal time. This can also be 'System' specific transaction. Transactions include, purchase based, redemption
+        based, transfer based (friend to friend), promotion based, conversion based (conversion among other platforms)</li>
+        <li><strong>Transaction Location:</strong> Location where the transaction originated. Useful for geospatial
+          analytics. Could be Merchant location, etc.</li>
+        <li><strong>Scheme ID:</strong> Merchants may run multiple schemes under which they can award points. This can
+        be 'System' as well if you want to inject/maintain liquidity in system.</li>
+        <li><strong>Transaction ID:</strong> A platform generated ID, that identifies any transaction on the platform.</li>
+      </ul>
+
+      </div>
+    </div>
+
+    <div id="body">
+      <div class="form-group">
+        <label>Query All Points Transactions</label>
+        <p><input id="queryAllPoints" type="submit" value="Query" class="btn btn-primary" ng-click="queryAllPoints()"></p>
+      </div>
+ 
+      <table id="all_points" class="table" align="center">
+
+
+        <tr>
+          <th>Txn ID</th>
+          <th>Txn Timestamp</th>
+          <th>Holder</th>
+          <th>Txn Location <br>(Long, Lat)</th>
+          <th>Scheme ID (Merchant Specific)</th>
+        </tr>
+
+        <tr ng-repeat="points in all_points">
+          <td>{{points.Key}}</td>
+          <td>{{points.timestamp}}</td>
+          <td>{{points.holder}}</td>
+          <td>{{points.location}}</td>
+          <td>{{points.schemeid}}</td>
+        </tr>
+      </table>
+
+      <div class="form-group">
+        <label>Query a Specific Points Transaction</label><br>
+        <h5 style="color:red;margin-bottom:2%" id="error_query">Error: Please enter a valid Points Transaction Id</h5>
+        
+        Enter a Transaction ID: <input id="createName" class="form-control" type="text" placeholder="Ex: 3" ng-model="points_id">
+        <input id="querySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryPoints()">
+      </div>
+
+      <table id="query_points" class="table" align="center">
+
+        <tr>
+          <th>Txn Timestamp</th>
+          <th>Holder</th>
+          <th>Txn Location <br>(Long, Lat)</th>
+          <th>Scheme ID</th>
+        </tr>
+
+        <tr>
+          <td>{{query_points.timestamp}}</td>
+          <td>{{query_points.holder}}</td>
+          <td>{{query_points.location}}</td>
+          <td>{{query_points.schemeid}}</td>
+        </tr>
+      </table>
+
+      <div class="form-group">
+        <label>Create Points Record</label>
+        <h5 style="color:green;margin-bottom:2%" id="success_create">Success! Tx ID: {{create_points}}</h5>
+        <br>
+        Enter Transaction id: <input class="form-control" type="text" placeholder="Ex: 11" ng-model="points.id">
+        Enter Scheme ID (merchant specific): <input class="form-control" type="text" placeholder="Ex: 0239L" ng-model="points.schemeid">
+        Enter Txn longitude: <input id="createName" class="form-control" type="text" placeholder="Ex: 28.012" ng-model="points.longitude">
+        Enter Txn latitude: <input id="createName" class="form-control" type="text" placeholder="Ex: 150.405" ng-model="points.latitude">
+        Enter Txn timestamp: <input class="form-control" type="text" placeholder="Ex: 4982342301" ng-model="points.timestamp">
+        Enter ID of holder: <input class="form-control" type="text" placeholder="Ex: 12345AD" ng-model="points.holder">
+        <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="recordPoints()"> 
+      </div>
+
+      <div class="form-group">
+        <label>Change Points Holder</label><br>
+        <h5 style="color:green;margin-bottom:2%" id="success_holder">Success! Tx ID: {{change_holder}}</h5>
+        <h5 style="color:red;margin-bottom:2%" id="error_holder">Error: Please enter a valid Points Id</h5>
+        Enter a points transaction id between 1 and 10: <input class="form-control" name="assetSelect" placeholder="Ex: 1" ng-model="holder.id">
+        Enter ID of new holder: <input class="form-control" name="assetSelect" placeholder="Ex: Barry" ng-model="holder.name">
+        <input id="transferSubmit" type="submit" value="Change" class="btn btn-primary" ng-click="changeHolder()">
+      </div>
+
+      <h6>&copy; 2017 Subhadip Mitra </h6>
+    </div>
+  </body>
+    <!-- requiring the angular page -->
+    <script type="text/javascript" src="app.js"> </script>
+</html>
