@@ -1,201 +1,207 @@
-## Loyalty Platform based on Hyperledger Fabric
+# Blockchain Loyalty Platform v2
 
-An app that uses Hyperledger Fabric blockchain as a platform for Loyalty programmes, either in isolation or multiple providers, with additional scope of inter-conversion of points between providers.
+Modern, AI-powered SDK/SaaS platform for blockchain-based loyalty rewards built on Hyperledger Fabric 2.5+.
 
+> **Note:** This is v2 - a complete rewrite of the platform. For the legacy v1 codebase, see the `v1` branch.
 
-### Application Flow
+## Overview
 
+This is a complete modernization of the blockchain loyalty platform, featuring:
 
-1. Various users (Merchants, Acquirers, exsisting Loyalty providers, Regulators) will interact with the Node.js application.
-2. The client (defined by wallet app, Acquirer systems, or existing loyalty platforms) JS will send messages to the backend when the user interacts with the application.
-3. Reading or writing the ledger is known as a proposal (for example, querying a specific Point transaction - queryPoints-  or recording a points transaction - recordPoints). This proposal is built by  the application via the SDK, and then sent to the endorsing peers.
-4. The endorsing peers will use the application-specific chaincode smart contract to simulate the transaction. If there are no issues, the transaction will be endorsed, and sent back to our application.
-5. The application will then send the endorsed proposal to the ordering service via the SDK. The orderer will package many proposals from the whole network into a block. Then, it will broadcast the new block to the committing peers in the network.
-6. Finally, each committing peer will validate the block and write it to its ledger. The transaction has now been committed, and any reads will reflect this change.
+- 🔗 **Modern Blockchain:** Hyperledger Fabric 2.5+ with TypeScript chaincode
+- 🤖 **AI-Powered:** Conversational AI assistant, fraud detection, personalized recommendations
+- 📦 **SDK-First:** Easy integration for any platform via JavaScript/TypeScript SDK
+- 🔌 **Plugin Ecosystem:** Shopify, WooCommerce, WordPress integrations
+- 🎨 **Modern Stack:** NestJS backend, Next.js frontend, React components
 
+## Project Structure
 
-    
-### Key Terms:
-1. **Holder:** User/subscriber ID who holds the current points. This may be your system specific ID or users Wallet Id
-2. **Transaction Timestamp:** Time stamp when the points txn took place. Advised to use consistent universal time. This can also be 'System' specific transaction. Transactions include, purchase based, redemption based, transfer based (friend to friend), promotion based, conversion based (conversion among other platforms)
-3. **Transaction Location:** Location where the transaction originated. Useful for geospatial analytics. Could be Merchant location, etc.
-4. **Scheme ID:** Merchants may run multiple schemes under which they can award points. This can be 'System' as well if you want to inject/maintain liquidity in system.
-5. **Transaction ID:** A platform generated ID, that identifies any transaction on the platform.
+```
+blockchain-loyalty-platform/
+├── packages/
+│   ├── types/          # Shared TypeScript types
+│   ├── sdk/            # Core JavaScript/TypeScript SDK
+│   ├── chaincode/      # Hyperledger Fabric chaincode
+│   ├── backend/        # NestJS REST API
+│   ├── frontend/       # Next.js web application
+│   └── react/          # React component library
+├── dev/                # Development documentation (gitignored)
+└── chats/              # Planning notes (gitignored)
+```
 
+## Prerequisites
 
-### Asset Definition:
-Throughout the app, the asset attributes are defined by:
-~~~~
-type Points struct {
-SchemeID string `json:"schemeid"`
-Timestamp string `json:"timestamp"`
-Location  string `json:"location"`
-Holder  string `json:"holder"`
-}
-~~~~
-    
-Additional attributes, like below can be added with complex logic.
-    
-    - Points Balance
-    - Points Value
-    - Points Value Currency
-    - Origin Merchant Name
-    - Origin Creation Date
-    - Auto Expire
-    - Expiry Date, etc
+- Node.js 18+ (currently using v22.13.1)
+- pnpm 8+ (currently using v10.14.0)
+- Docker & Docker Compose (for Fabric network)
+- Git
 
+## Quick Start
 
-### Prerequisites (Linux : Ubuntu)
-**1. Install cURL**
-`$ sudo apt install curl`
+### 1. Install Dependencies
 
-**2. Install Docker CE**
+```bash
+pnpm install
+```
 
-`$ sudo apt-get update`
+### 2. Build All Packages
 
-~~~~
-$ sudo apt-get install \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    software-properties-common
-~~~~
-    
-`$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -`
-~~~~
-$ sudo add-apt-repository \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-~~~~  
-`$ sudo apt-get update`
+```bash
+pnpm run build
+```
 
-`$ sudo apt-get install docker-ce`
+### 3. Run Tests
 
+```bash
+pnpm run test
+```
 
-On production systems, you should install a specific version of Docker CE instead of always using the latest. This output is truncated. List the available versions.
-~~~~
-$ apt-cache madison docker-ce
+## Development
 
-docker-ce | 17.12.0~ce-0~ubuntu | https://download.docker.com/linux/ubuntu xenial/stable amd64 Packages
-~~~~
-   
-**3. Optional, Manage Docker as a Non-Root User**
+### Available Commands
 
-If you don't want to use sudo when you use the docker command, create a Unix group called docker and add users to it. When the docker daemon starts, it makes the ownership of the Unix socket read/writable by the docker group.
+```bash
+# Build all packages
+pnpm run build
 
-_Warning:_ The docker group grants privileges equivalent to the root user. For details on how this impacts security in your system, see Docker Daemon Attack Surface.
+# Run all packages in dev/watch mode
+pnpm run dev
 
-****
-To create the docker group and add your user:
+# Run all tests
+pnpm run test
 
-a) Create the docker group:
+# Lint all code
+pnpm run lint
 
-`$ sudo groupadd docker`
+# Format all code
+pnpm run format
 
-b) Add your user to the docker group:
+# Type check all packages
+pnpm run typecheck
 
-`$ sudo usermod -aG docker $USER`
+# Clean all build artifacts
+pnpm run clean
+```
 
-c) Log out and log back in, so that your group membership is re-evaluated.
+### Working with Packages
 
-d) On a desktop Linux environment such as X Windows, log out of your session completely and then log back in.
+Each package can be developed independently:
 
-e) Verify that you can run Docker commands without sudo.
+```bash
+# Build specific package
+pnpm --filter @loyalty/sdk build
 
-`$ docker run hello-world`
+# Run specific package in dev mode
+pnpm --filter @loyalty/backend dev
 
-f) This command downloads a test image and runs it in a container. When the container runs, it prints an informational message and exits.
-   
-   
-**4. Docker Compose**
-Suggested Docker version 17.03.1-ce or greater, and Docker Compose version 1.9.0 or greater:
-   `$ sudo apt update`
-   
-   `$ sudo apt install docker-compose`
-   
- 
- **5. Installing Node.js and npm**
+# Test specific package
+pnpm --filter @loyalty/chaincode test
+```
 
-Suggested version, node > 6.9 and  < 7.x,
-npm > 3.x
+## Packages
 
-`$ sudo bash -c "cat >/etc/apt/sources.list.d/nodesource.list" <<EOL
-deb https://deb.nodesource.com/node_6.x xenial main
-deb-src https://deb.nodesource.com/node_6.x xenial main
-EOL`
+### @loyalty/types
 
-`$ curl -s https://deb.nodesource.com/gpgkey/nodesource.gpg.key | sudo apt-key add -`
+Shared TypeScript type definitions for all packages.
 
-`$ sudo apt update`
+### @loyalty/sdk
 
-`$ sudo apt install nodejs`
+Core JavaScript/TypeScript SDK for integrating loyalty features into any application.
 
-`$ sudo apt install npm`
+### @loyalty/chaincode
 
-_verify:_
-`$ node --version && npm --version`
+Hyperledger Fabric chaincode (smart contracts) written in TypeScript:
+- Program management
+- Points transactions
+- Member accounts
+- Rewards catalog
 
+### @loyalty/backend
 
+NestJS REST API providing:
+- Blockchain Gateway integration
+- Authentication & authorization
+- AI services integration
+- Webhooks and notifications
 
-**6. Installing Go Language**
-Visit https://golang.org/dl/ and make note of the latest stable release (v1.8 or later).
+### @loyalty/frontend
 
-To install Go language, run the following commands in your terminal/command line:
+Next.js 14 web application with:
+- Admin dashboard
+- Member portal
+- Analytics and reporting
 
-`$ sudo apt update`
+### @loyalty/react
 
+React component library for building loyalty UIs:
+- Points balance widgets
+- Transaction history
+- Rewards gallery
+- AI chat assistant
 
-`$ sudo curl -O https://storage.googleapis.com/golang/go1.9.2.linux-amd64.tar.gz `
+## Development Roadmap
 
-_Note:_ Switch out the black portion of the URL with the correct filename.
+### Phase 1: Foundation (Months 1-3) - Current
+- ✅ Monorepo setup with Turborepo
+- ✅ TypeScript types package
+- ✅ Basic SDK structure
+- 🚧 Hyperledger Fabric 2.5 network
+- 🚧 TypeScript chaincode
+- 🚧 NestJS API
+- 🚧 Next.js frontend
 
-`$ sudo tar -xvf go1.9.2.linux-amd64.tar.gz`
+### Phase 2: Platform Integrations (Months 4-5)
+- Shopify app/plugin
+- WooCommerce plugin
+- WordPress plugin
+- React component library
 
-`$ sudo mv go /usr/local`
+### Phase 3: AI Features (Months 6-8)
+- Conversational AI assistant
+- Fraud detection agent
+- Personalized recommendations
+- Predictive analytics
 
-`$ echo 'export PATH=$PATH:/usr/local/go/bin' >> ~/.profile`
+### Phase 4: Scale & Polish (Months 9-12)
+- Multi-tenant architecture
+- Kubernetes deployment
+- Monitoring & observability
+- Billing system
 
-`$ source ~/.profile`
+## Technology Stack
 
-Check that the Go version is v1.8 or later:
+- **Blockchain:** Hyperledger Fabric 2.5+
+- **Chaincode:** TypeScript with fabric-contract-api
+- **Backend:** NestJS, PostgreSQL, Redis
+- **Frontend:** Next.js 14, TailwindCSS, React Query
+- **AI:** OpenAI/Claude, LangChain, Pinecone
+- **Build:** Turborepo, pnpm workspaces, tsup
+- **Testing:** Vitest, Playwright
+- **DevOps:** Docker, Kubernetes, GitHub Actions
 
-`$ go version`
+## Contributing
 
+This is currently a private project. For contribution guidelines, see [CONTRIBUTING.md](CONTRIBUTING.md) (coming soon).
 
+## License
 
-### Running the Application
+MIT License - see [LICENSE](LICENSE) for details.
 
-1. Remove any existing docker containers to avoid conflict.
-`$ docker rm -f $(docker ps -aq)`
+## Author
 
-2. Start the Fabric Network
-`$ ./startFabric.sh`
-if getting error about running ./startFabric.sh permission 
-`chmod a+x startFabric.sh`
+**Subhadip Mitra**
+- Email: contact@subhadipmitra.com
+- GitHub: [@bassrehab](https://github.com/bassrehab)
 
+## Links
 
-3. Install the required libraries from the package.json file, register the Admin and User components of our network, and start the client application with the following commands:
-    
-    ~~~~
-    $ npm install
-    
-    $ node registerAdmin.js
-    
-    $ node registerUser.js
-    
-    $ node server.js
-    ~~~~
-    
-4. Access the frontend application:
-   Open browser: http://localhost:8000
-    
-5. Cleaning up
-    ~~~~
-    $ docker rm -f $(docker ps -aq)
-    $ docker rmi -f $(docker images -a -q)
-    ~~~~
-    
-    
-### License ###
-See, license.md
+- [Repository](https://github.com/bassrehab/blockchain-loyalty-fabric)
+- [v1 Branch](https://github.com/bassrehab/blockchain-loyalty-fabric/tree/v1) (legacy code)
+- [Hyperledger Fabric Docs](https://hyperledger-fabric.readthedocs.io/)
+- [Project Documentation](dev/) (for developers with repository access)
+
+---
+
+**Status:** 🚀 Active Development - Phase 1
+**Version:** 2.0.0-alpha
+**Last Updated:** 2025-11-16

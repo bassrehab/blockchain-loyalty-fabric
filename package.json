@@ -1,0 +1,39 @@
+{
+  "name": "blockchain-loyalty-platform",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Modern blockchain-based loyalty rewards platform built on Hyperledger Fabric",
+  "author": "Subhadip Mitra <contact@subhadipmitra.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bassrehab/blockchain-loyalty-fabric"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "scripts": {
+    "build": "turbo run build",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "typecheck": "turbo run typecheck"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.11.0",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.4",
+    "tsup": "^8.0.1",
+    "turbo": "^1.12.4",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
+}

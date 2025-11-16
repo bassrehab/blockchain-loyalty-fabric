@@ -1,0 +1,21 @@
+{
+  "name": "@loyalty/react",
+  "version": "0.1.0",
+  "description": "React component library for loyalty platform",
+  "author": "Subhadip Mitra <contact@subhadipmitra.com>",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "echo 'React components build - Coming Soon'",
+    "dev": "echo 'React components dev - Coming Soon'",
+    "lint": "echo 'React components lint - Coming Soon'",
+    "typecheck": "echo 'React components typecheck - Coming Soon'",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@loyalty/sdk": "workspace:*",
+    "@loyalty/types": "workspace:*"
+  }
+}

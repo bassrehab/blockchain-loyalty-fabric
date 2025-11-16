@@ -1,0 +1,19 @@
+{
+  "name": "@loyalty/frontend",
+  "version": "0.1.0",
+  "description": "Next.js frontend for loyalty platform",
+  "author": "Subhadip Mitra <contact@subhadipmitra.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "build": "echo 'Frontend build - Coming Soon'",
+    "dev": "echo 'Frontend dev - Coming Soon'",
+    "lint": "echo 'Frontend lint - Coming Soon'",
+    "typecheck": "echo 'Frontend typecheck - Coming Soon'",
+    "clean": "rm -rf .next"
+  },
+  "dependencies": {
+    "@loyalty/sdk": "workspace:*",
+    "@loyalty/types": "workspace:*"
+  }
+}
